@@ -10,6 +10,7 @@ class Main {
     // 1. 가장 큰 숫자부터 선택하며 관계의 합을 구한다.
     // 2. 현재 합이 K를 초과하면 다음으로 작은 숫자를 선택한다.
     // 1과 2를 반복.
+    // 핵심 아이디어: "큰 수들을 앞에 배치하고, 작은 수들을 뒤에 배치하되, 어떤 큰 수들을 선택할지 그리디하게 결정"
     public static void main(String[] args) throws IOException {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -46,6 +47,7 @@ class Main {
         bw.flush();
         bw.close();
     }
+
 
 
 }
