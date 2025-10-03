@@ -11,6 +11,10 @@ public class Main {
     // 2. initArray의 시작하는 부분이 순열처럼 0이 아니라 start Index로 따로 관리되어야 한다는 것.
     // -> 그 이유는 앞서 검색했던 것을 순열처럼 돌아가서 검색하지 않기 때문. 순서를 고려하지 않기 때문에.
 
+    // 오답노트) 맞는 조합을 찾아도 프로세스가 종료되지 않고 계속 찾는 문제가 있었음.
+    // 그래서 답이 여러 개 출력되게됨.
+    // flag를 도입해서 컨트롤하면 조건을 잘못 줬을 때, r이나 depth가 계속 증가 혹은 감소하여 index out of bound 발생할 수도 있음.
+
     static int[] initArray;
     static boolean[] visited;
     static int R;
