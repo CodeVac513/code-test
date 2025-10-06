@@ -39,13 +39,14 @@ class Solution {
             return;
         }
         
+        // 승리할 수 있을 때
         if(n > info[depth]) {
             result[depth] = info[depth] + 1;
             backtracking(n - result[depth], info, depth + 1);
             result[depth] = 0;
         }
-        
-        backtracking(n - result[depth], info, depth + 1);
+        // 해당 점수를 포기해야 할 때
+        backtracking(n, info, depth + 1);
     }
     
     private boolean isLowerScoreMore(int ryan[], int[] answer) {
