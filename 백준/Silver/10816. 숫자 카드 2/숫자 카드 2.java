@@ -17,7 +17,7 @@ public class Main {
         int[] nums = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
 
         Arrays.sort(nums);
-        
+
         int M = Integer.parseInt(br.readLine());
         int[] targets = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
 
@@ -58,7 +58,6 @@ public class Main {
             if (nums[mid] > target) {
                 right = mid - 1;
             } else {
-                lastIndex = mid;
                 left = mid + 1;
             }
         }
