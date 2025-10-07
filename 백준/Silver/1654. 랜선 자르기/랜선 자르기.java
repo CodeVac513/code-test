@@ -2,49 +2,65 @@ import java.util.*;
 import java.lang.*;
 import java.io.*;
 
-class Main {
+public class Main {
     // 1654번
-    // 이진탐색 문제
-    // 탐색 범위는 1~가장 긴 케이블의 길이
-    // mid(중간값)는 left + right를 2로 나눈 값
-    // mid로 케이블을 나눴을 때, 만들어진 개수가 N개 이상이면 더 긴 길이를 탐색할 수 있도록 left = mid + 1로 설정
-    // N개 미만이면 더 짧게 가져가기 위해 right = mid - 1로 설정
-    
-    // 오답 노트)
-    // 랜선의 길이가 2^31 - 1 이하이므로, left + right가 Integer 범위를 벗어날 수 있다.
+    // 파라메트릭 서치, 바이너리 서치
+    // 나무 자르기 문제와 매우 비슷하다.
+    // 최대 랜선, 즉 최적화된 값 X를 구해야하는데 파라메트릭 서치를 사용해서 결정 문제로 끌어내려야 한다.
+    // isPossible의 조건만 잘 생각하자.
+
+    // 오답 노트) 시간 초과 발생
+    // left가 1이상이어야 하는데, 0으로 설정해서 무한 루프가 발생될 것 같음.
+    // 2) 여전히 시간 초과 발생
+    // 값이 매우 커지면서 answer 부분에 오버플로가 발생하고 무한 루프가 도는건가?
+
     public static void main(String[] args) throws IOException {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         int K = Integer.parseInt(st.nextToken());
         int N = Integer.parseInt(st.nextToken());
-        int[] lan = new int[K];
+
+        int[] A = new int[K];
+        int longest = 0;
         for (int i = 0; i < K; i++) {
-            lan[i] = Integer.parseInt(br.readLine());
-        }
-        Arrays.sort(lan);
-        long left = 1, right = lan[K - 1];
-        long answer = 0;
-        while (left <= right) {
-
-            long mid = (left + right) / 2;
-            long count = 0;
-
-            for (int cable : lan) {
-                count += cable / mid;
-            }
-
-            if (count >= N) {
-                answer = mid;
-                left = mid + 1;
-            } else {
-                right = mid - 1;
+            A[i] = Integer.parseInt(br.readLine());
+            if (A[i] > longest) {
+                longest = A[i];
             }
         }
+        Arrays.sort(A);
+        bw.write(String.valueOf(parametricSearch(N, A, longest)));
 
-        bw.write(Long.toString(answer));
         br.close();
         bw.flush();
         bw.close();
     }
+
+    public static long parametricSearch(int N, int[] A, int longest) {
+        long left = 1, right = longest;
+        long answer = 0;
+        while (left <= right) {
+            long length = left + (right - left) / 2;
+
+            if (isPossible(N, A, length)) {
+                answer = length;
+                left = length + 1;
+            } else {
+                right = length - 1;
+            }
+        }
+        return answer;
+    }
+
+    public static boolean isPossible(int N, int[] A, long length) {
+        long sum = 0;
+        for (int i = 0; i < A.length; i++) {
+            sum += A[i] / length;
+        }
+
+        return sum >= N ? true : false;
+    }
+
+
 }
