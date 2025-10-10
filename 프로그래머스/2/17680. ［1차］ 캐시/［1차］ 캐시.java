@@ -1,92 +1,68 @@
 import java.util.*;
-import java.lang.*;
 
 class Solution {
+    //  캐시에 사용할 연결리스트를 가지고 있어야 한다.
+    //  주요 기능은 다음과 같다.
+    //  1. FIFO 구조
+    //  2. 호출된 값이 중간에 있다면 삭제하고 마지막 값으로 삽입하기
     public int solution(int cacheSize, String[] cities) {
-        FastQueue cache = new FastQueue();
-        return solve(cache, cities, cacheSize);
-    }
-    
-    public int solve(FastQueue cache, String[] cities, int cacheSize) {
-        int totalTime = 0;
-        for(String currentCity : cities) {
-            currentCity = currentCity.toUpperCase();
+        int answer = 0;
+        Cache cache = new Cache(cacheSize);
+        for(String city : cities) {
+            city = city.toUpperCase();
             if(cacheSize == 0) {
-                totalTime += 5;
+                answer += 5;
                 continue;
             }
-            
-            if(cache.size() < cacheSize) {
-                if(cache.contains(currentCity)) {
-                    totalTime += 1;
-                    cache.moveToLast(currentCity);
-                } else {
-                    totalTime += 5;
-                    cache.offer(currentCity);
-                }
-                continue;
-            }
-            
-            if(cache.contains(currentCity)) {
-                totalTime += 1;
-                cache.moveToLast(currentCity);
-            } else {
-                totalTime += 5;
-                cache.poll();
-                cache.offer(currentCity);
-            }
+            answer += cache.add(city);
         }
-        return totalTime;
+        return answer;
     }
     
-    class FastQueue {
-        LinkedList<String> list;
-        Map<String, Integer> dataMap;
+    class Cache {
+        int cacheSize;
+        LinkedList<String> linkedList;
         
-        FastQueue () {
-            list = new LinkedList();
-            dataMap = new HashMap();
+        Cache(int cacheSize) {
+            this.cacheSize = cacheSize;
+            linkedList = new LinkedList();
         }
         
-        public void offer(String data) {
-            list.addLast(data);
-            updateMap();
+        public int add(String s) {
+            // 중간에 있으면 찾아서 그걸 삭제하고 Last에 삽입
+            int existIndex = linkedList.indexOf(s);
+            if(existIndex != -1) {
+                linkedList.remove(existIndex);
+                linkedList.addLast(s);
+                return 1;
+            }
+            
+            // 캐시 사이즈에 도달하지 않았다면 Last에 삽입
+            if(linkedList.size() < cacheSize) {
+                linkedList.addLast(s);
+                return 5;
+            }
+            
+            // 중간에 없다면 첫 번째를 뽑고 Last에 삽입
+            linkedList.pollFirst();
+            linkedList.addLast(s);
+            return 5;
+        }
+        
+        public boolean isExisted(String s) {
+            int existIndex = linkedList.indexOf(s);
+            if(existIndex != -1) {
+                return true;
+            }
+            return false;
         }
         
         public String poll() {
-            if(list.isEmpty()) return null;
-            String item = list.removeFirst();
-            updateMap();
-            return item;
-        }
-        
-        public boolean moveToLast(String item) {
-            if(!dataMap.containsKey(item)) return false;
-            
-            list.remove(item);
-            list.addLast(item);
-            updateMap();
-            return true;
-        }
-        
-        public boolean contains(String item) {
-            return dataMap.containsKey(item);
-        }
-        
-        public boolean isEmpty() {
-            return list.isEmpty();
-        }
-        
-        public int size() {
-            return list.size();
-        }
-        
-        private void updateMap() {
-            dataMap.clear();
-            for(int i = 0 ; i < list.size() ; i++) {
-                dataMap.put(list.get(i), i);
+            if(linkedList.isEmpty()) {
+                return null;
             }
+            
+            return linkedList.pollFirst();
         }
-       
     }
 }
