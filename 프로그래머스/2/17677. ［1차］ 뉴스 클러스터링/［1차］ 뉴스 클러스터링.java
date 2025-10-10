@@ -1,34 +1,39 @@
 import java.util.*;
-import java.lang.*;
-
 
 class Solution {
+    // <입력>
+    //     문자열 2개의 입력, 2이상 1000이하의 길이
+    // 1. 입력으로 들어온 문자열은 두 글자씩 끊어서 다중 집합(중복 허용)을 생성한다.
+    //     - 공백, 숫자, 특수 문자 등이 들어 있으면 그 글자 쌍은 버린다.
+    //     - 대문자/소문자의 차이는 무시한다. (toUpperCase()로 처리.)
+    // 2. 두 집합을 연산하면서 자카드 유사도를 생성한다.
+    //     - 교집합의 개수 / 합집합의 개수 
+    //     - 공집합의 경우, 1로 정의
+    
+    
     public int solution(String str1, String str2) {
-        return solve(str1, str2);
+        int answer = 0;
+        String[] str1Tokens = stringToArray(str1);
+        String[] str2Tokens = stringToArray(str2);
+        String[] intersection = makeIntersection(str1Tokens, str2Tokens);
+        String[] union = makeUnion(str1Tokens, str2Tokens);
+        answer = calculateJaccad(intersection, union);
+        return answer;
     }
     
-    public int solve(String str1, String str2) {
-        String[] a = stringToArray(str1.toUpperCase());
-        String[] b = stringToArray(str2.toUpperCase());
+    public int calculateJaccad(String[] intersection, String[] union) {
+        double result = 0;
+        if(union.length == 0) {
+            result = 1;
+        } else {
+            result = ((double) intersection.length) / ((double) union.length);
+        }
         
-        
-        String[] intersection = makeIntersection(a, b);
-        String[] union = makeUnion(a, b);
-        
-       
-        return makeAnswer(intersection, union);
-    }
-    
-    public int makeAnswer(String[] intersection, String[] union) {
-        // double로 계산한 뒤에 65536을 곱하고 integer로 형변환해야 함.
-        if(union.length == 0) return 65536;
-        
-        double result = ((double)intersection.length / (double)union.length);
         return (int) (result * 65536);
     }
     
-    public String[] makeUnion(String[] a, String[] b) {
-Set<String> tempSet = new HashSet();
+   public String[] makeUnion(String[] a, String[] b) {
+        Set<String> tempSet = new HashSet();
         Map<String, Integer> tempMapForA = new HashMap();
         Map<String, Integer> tempMapForB = new HashMap();
         ArrayList<String> tempArrayList = new ArrayList();
@@ -94,85 +99,27 @@ Set<String> tempSet = new HashSet();
         return result;
     }
     
-    public String[] stringToArray(String s) {        
-        ArrayList<String> temp = new ArrayList();
+    public String[] stringToArray(String s) {
+        s = s.toUpperCase();
+        ArrayList<String> tokens = new ArrayList();
         
-        for(int i = 0 ; i < s.length() -1 ; i++) {
+        for(int i = 0 ; i < s.length() - 1 ; i++) {
             String token = s.substring(i, i + 2);
-            if(existSpecialSymbols(token)) {
-                continue;
+            if(isValid(token)) {
+                tokens.add(token);
             }
-            temp.add(token);
         }
         
-        String[] result = new String[temp.size()];
-        for(int i = 0 ; i < temp.size() ; i++) {
-            result[i] = temp.get(i);
-        }
-        
-        return result;
+        return tokens.toArray(new String[0]);
     }
     
-    public boolean existSpecialSymbols(String token) {
+    public boolean isValid(String token) {
         for(int i = 0 ; i < token.length() ; i++) {
-            char currentChar = token.charAt(i);
-            switch (currentChar) {
-                case 'A':
-                    break;
-                case 'B':
-                    break;
-                case 'C':
-                    break;
-                case 'D':
-                    break;
-                case 'E':
-                    break;
-                case 'F':
-                    break;
-                case 'G':
-                    break;
-                case 'H':
-                    break;
-                case 'I':
-                    break;
-                case 'J':
-                    break;
-                case 'K':
-                    break;
-                case 'L':
-                    break;
-                case 'M':
-                    break;
-                case 'N':
-                    break;
-                case 'O':
-                    break;
-                case 'P':
-                    break;
-                case 'Q':
-                    break;
-                case 'R':
-                    break;
-                case 'S':
-                    break;
-                case 'T':
-                    break;
-                case 'U':
-                    break;
-                case 'V':
-                    break;
-                case 'W':
-                    break;
-                case 'X':
-                    break;
-                case 'Y':
-                    break;
-                case 'Z':
-                    break;
-                default:
-                    return true;
+            char c = token.charAt(i);
+            if(c < 'A' || c > 'Z') {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 }
