@@ -1,86 +1,94 @@
 import java.util.*;
 
 class Solution {
-    Set<String> menuSet = new HashSet();
-    Map<String, Integer> menuMap = new HashMap();
+    // 여러 손님이 각각 시킨 단품 메뉴 리스트가 있음.
+    // 이 리스트를 참고해서 세트 메뉴를 만들거임.
+    // 메뉴는 최소 2명 이상이 시킨 것들로 조합을 할 것이며, 메뉴 구성은 가장 많이 시킨 조합을 선택.
+    // <입력>
+    //     orders 배열 : 2이상, 20이하의 크기
+    //     orders 원소의 길이 : 2이상, 10이하의 문자열 (대문자 알파벳으로만 구성, 중복된 문자 X)
+    //     course 배열 : 1이상 10이하의 크기
+    //     course 원소 : 2이상 10이하의 자연수 (세트 메뉴에 들어갈 단품 메뉴의 개수)
+    // <출력>
+    //     세트 메뉴 구성 문자열을 모아놓은 배열
+    // 1. 문자열을 토큰으로 쪼개서 단품 메뉴 배열로 가지고 있기
+    //     - 이 때, 문자열을 정렬해야 조합을 사용할 수 있음.
+    // 2. 단품 메뉴를 코스 원소에 따라 길이를 정하고, 조합을 활용해서 모든 세트 메뉴 구성을 만들기.
+    //     - Map 과 getOrDefault를 활용해서 count하기.
+    // 3. count값을 통해서 제일 많이 주문한 세트들을 골라내고 반환하기
     
+    int max;
     public String[] solution(String[] orders, int[] course) {
-        orders = preprocess(orders);
-        String[] answer = solve(orders, course);
+        String[] answer = {};
+        String[][] singleMenusArray = new String[orders.length][0];
+        int iter = 0;
+        for(String order : orders) {
+            singleMenusArray[iter] = stringToArray(order);
+            iter++;
+        }
+        answer = getAnswer(singleMenusArray, course);
         return answer;
     }
     
-    public String[] preprocess(String[] orders) {
-        String[] newOrders = new String[orders.length];
-        for(int i = 0 ; i < orders.length ; i++) {
-            String[] tokens = orders[i].split("");
-            Arrays.sort(tokens);
-            StringBuilder sb = new StringBuilder();
-            for(String token : tokens) {
-                sb.append(token);
+    public String[] getAnswer(String[][] singleMenusArray, int[] course) {
+        ArrayList<String> result = new ArrayList();
+        
+        for(int courseCount : course) {
+            max = 0;
+            HashMap<String, Integer> menuMap = createMenuMap(singleMenusArray, courseCount);
+            for(String setMenu : menuMap.keySet()) {
+                int currentCount = menuMap.get(setMenu);
+                if(max == currentCount) result.add(setMenu);
             }
-            newOrders[i] = sb.toString();
         }
-        return newOrders;
+        String[] ans = result.toArray(new String[0]);
+        Arrays.sort(ans);
+        return ans;
     }
     
-    public String[] solve(String[] orders, int[] course) {
-        // orders로부터 사용할 메뉴들 추출하기
-        for(String order : orders) {
-            for(int i = 0 ; i < course.length ; i++) {
-                String[] tokens = order.split("");
-                combination(tokens, 0, course[i], "");
-            }
+    public HashMap<String, Integer> createMenuMap(String[][] singleMenusArray, int courseCount) {
+        String[] menuCombination = getCombination(singleMenusArray, courseCount);
+        HashMap<String, Integer> menuMap = new HashMap();
+        for(String menu : menuCombination) {
+            int currentCount = menuMap.getOrDefault(menu, 0) + 1;
+            menuMap.put(menu, currentCount);
+            max = Math.max(max, currentCount);
         }
         
-        // 메뉴 조합의 주문 횟수 저장하기
-        for(String menu : menuSet) {
-            int count = 0;
-            for(String order: orders) {
-                String[] tokens = menu.split("");
-                int temp = 0;
-                for(String token : tokens) {
-                    if(order.contains(token)) temp++;
-                }
-                if(temp == tokens.length) count++;
-            }
-            
-            if(count >= 2) {
-                menuMap.put(menu, count);
-            }
-        }
-        
-        // 가장 주문 횟수가 많은 조합을 answer list에 추가한다.
-        ArrayList<String> answer = new ArrayList();
-        for(int menuLength : course) {
-            
-            int max = 0;
-            
-            for(String key : menuMap.keySet()) {
-                if(key.length() != menuLength) continue;
-                max = Math.max(max, menuMap.get(key));
-            }
-            
-            for(String key : menuMap.keySet()) {
-                if(key.length() == menuLength && menuMap.get(key) == max) {
-                    answer.add(key);
-                }
-            }
-        }
-        Collections.sort(answer);
-        
-        return answer.toArray(new String[answer.size()]);
+        return menuMap;
     }
     
-    public void combination(String[] tokens, int startIndex, int length, String menu) {
-        if (length == 0) {
-            menuSet.add(menu);
+    public String[] getCombination(String[][] singleMenusArray, int courseCount) {
+        ArrayList<String> totalResult = new ArrayList();
+        HashMap<String, Integer> countMap = new HashMap();
+        for(String[] singleMenus : singleMenusArray) {
+            ArrayList<String> result = new ArrayList();
+            combination(singleMenus, "", result, courseCount, 0);
+            for (String menus : result) {
+                countMap.put(menus, countMap.getOrDefault(menus, 0) + 1);
+                int currentCount = countMap.getOrDefault(menus, 0);
+                if(currentCount >= 2) totalResult.add(menus);
+            }
+        }
+        
+        return totalResult.toArray(new String[0]);
+        
+    }
+    
+    public void combination(String[] singleMenus, String ans, ArrayList<String> result, int courseCount, int startIndex) {
+        if(courseCount == 0) {
+            result.add(ans);
             return;
+        }        
+        for(int i = startIndex ; i < singleMenus.length; i++) {
+            combination(singleMenus, ans+singleMenus[i], result, courseCount - 1, i + 1);
         }
-        
-        for(int i = startIndex; i < tokens.length ; i++) {
-            combination(tokens, i + 1, length - 1, menu+tokens[i]);
-            
-        }
+    }
+    
+    
+    public String[] stringToArray(String order) {
+        String[] tokens = order.split("");
+        Arrays.sort(tokens);
+        return tokens;
     }
 }
