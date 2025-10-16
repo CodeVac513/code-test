@@ -6,7 +6,9 @@ public class Main {
     // 층은 2^(N) - 1
     // 별이 가장 많이 찍히는 변의 길이는 2^(N + 1) - 3임을 확인
     // 솔직히 이해 못해서 C++ 해설지를 참고했다.
-    //
+    // 규칙을 코드 10번 정도 보고 나서 이해했는데,
+    // 이전 단계의 삼각형을 중심으로 한 단계 이후의 삼각형의 변을 채우는 문제였다.
+    // 그 과정에서 홀수는 일반 삼각형, 짝수는 뒤집어진 역삼각형의 모양을 띄는 것이고.
     static char[][] board = new char[2048][2048];
 
     public static void main(String[] args) throws IOException {
