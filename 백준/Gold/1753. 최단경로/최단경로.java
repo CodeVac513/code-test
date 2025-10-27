@@ -8,9 +8,9 @@ public class Main {
     // 간선에 음수가 없다 -> 최단 거리를 구할 수 있는 다익스트라 알고리즘을 활용 가능
     // 우선순위 큐를 활용해야 한다. 거리가 짧은 순서대로 방문할 것이기 때문.
 
-    static int[] distance; // shortest → distance로 변경
+    static int[] distance;
     static int V, E;
-    static ArrayList<ArrayList<Edge>> graph; // adjacentList → graph로 변경
+    static ArrayList<ArrayList<Edge>> graph;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
