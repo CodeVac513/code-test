@@ -1,66 +1,51 @@
+import java.io.*;
 import java.util.*;
 import java.lang.*;
-import java.io.*;
 
 public class Main {
-    // 1182번
-    //
-    // N개의 정수 중 크기가 양수인 부분 수열 <- 1개 이상의 원소를 골라서 더해야 함.
-    // 결국 조합의 문제임
-    // 어떤 조합을 통해서 합이 S가 되는 것의 개수를 구하면 됨.
-    static int count = 0;
-    static int[] initArray;
-    static boolean[] visited;
-    static int[] answer;
+    // 1182
+    // 백트래킹
+    // N개의 정수, 크기가 양수인 부분 수열에서 S가 되는 경우의 수
+    // 오답 노트)
+    // 선택과 비선택, 두 가지의 선택지를 트래킹해야 함. 전형적인 조합으로 구하는 것처럼 생각하면 안됨.
+    // 부분집합을 구하는 문제임.
+    // 오답 노트 2)
+    // 공집합을 생각해야 함.
+
     static int N;
     static int S;
+    static int[] nums;
+    static int answer = 0;
 
     public static void main(String[] args) throws IOException {
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         S = Integer.parseInt(st.nextToken());
-
-        initArray = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-
-
-        for (int i = 1; i <= N; i++) {
-            answer = new int[i];
-            visited = new boolean[N];
-            combination(0, i, 0);
+        nums = new int[N];
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) {
+            nums[i] = Integer.parseInt(st.nextToken());
         }
 
-        bw.write(String.valueOf(count));
+        backtracking(0, 0, 0);
+        bw.write(String.valueOf(answer));
 
-        br.close();
         bw.flush();
         bw.close();
+        br.close();
     }
 
-    public static void combination(int startIndex, int r, int depth) {
-        if (r == 0) {
-            if (getAnswer() == S) {
-                count++;
+    static void backtracking(int sum, int depth, int count) {
+        if (depth == N) {
+            if (sum == S && count > 0) {
+                answer++;
             }
             return;
         }
 
-        for (int i = startIndex; i < N; i++) {
-            if (!visited[i]) {
-                visited[i] = true;
-                answer[depth] = initArray[i];
-                combination(i + 1, r - 1, depth + 1);
-                visited[i] = false;
-            }
-        }
-    }
-
-    public static int getAnswer() {
-        int sum = 0;
-        for (int i = 0; i < answer.length; i++) {
-            sum += answer[i];
-        }
-        return sum;
+        backtracking(sum + nums[depth], depth + 1, count + 1);
+        backtracking(sum, depth + 1, count);
     }
 }
