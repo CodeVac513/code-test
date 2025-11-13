@@ -1,61 +1,51 @@
+
+
+import java.io.*;
 import java.util.*;
 import java.lang.*;
-import java.io.*;
 
 public class Main {
     // 15649번
     // 순열
-    // N개의 숫자 중 M개를 고르는 전형적인 순열 문제
+    // 순서가 있음. N개의 숫자 중 M개를 뽑아야 함.
 
-    static int limitDepth;
-    static boolean[] visited;
-    static int[] ans;
-    static int[] initArray;
     static int N;
+    static int M;
+    static int[] nums;
+    static boolean[] visited;
 
     public static void main(String[] args) throws IOException {
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
-        visited = new boolean[limitDepth];
-
-        limitDepth = Integer.parseInt(st.nextToken());
-        ans = new int[limitDepth];
-        initArray = new int[N];
+        M = Integer.parseInt(st.nextToken());
+        nums = new int[N];
         visited = new boolean[N];
-
-        for (int i = 0; i < N; i++) {
-            initArray[i] = i + 1;
+        for (int i = 1; i <= N; i++) {
+            nums[i - 1] = i;
         }
-        permutation(0);
-        br.close();
+
+        permutation(0, "");
+
         bw.flush();
         bw.close();
+        br.close();
     }
 
-    static void permutation(int currentDepth) {
-        if (currentDepth == limitDepth) {
-            printAnsArray();
-            return;
+    static void permutation(int depth, String ans) {
+        if (depth == M) {
+            System.out.println(ans.trim());
         }
 
         for (int i = 0; i < N; i++) {
-            if (!visited[i]) {
-                visited[i] = true;
-                ans[currentDepth] = initArray[i];
-                permutation(currentDepth + 1);
-                visited[i] = false;
-            }
-        }
-    }
+            if (visited[i])
+                continue;
 
-    static void printAnsArray() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < limitDepth; i++) {
-            sb.append(ans[i] + " ");
+            visited[i] = true;
+            permutation(depth + 1, ans + " " + nums[i]);
+            visited[i] = false;
         }
-        System.out.println(sb.toString());
     }
 
 }
