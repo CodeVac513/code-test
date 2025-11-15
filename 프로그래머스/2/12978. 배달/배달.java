@@ -1,26 +1,23 @@
 import java.util.*;
 
 class Solution {
-    // dijkstra
-    // 1번에서 출발하고, 전체 마을에 대한 최소 경로를 구한다.
-    // 그 후에 K 시간 이하인 경우만 반환
     
     ArrayList<Edge>[] graph;
-    int[] distance;
     int N;
     int K;
+    int[] distance;
+    final int INF = 50 * 10000 + 1;
     
     public int solution(int N, int[][] road, int K) {
         int answer = 0;
-        //init
         this.N = N;
         this.K = K;
         graph = new ArrayList[N];
-        distance = new int[N];
         
+        distance = new int[N];
+        Arrays.fill(distance, INF);
         for(int i = 0 ; i < N ; i++) {
             graph[i] = new ArrayList();
-            distance[i] = Integer.MAX_VALUE;
         }
         
         for(int i = 0 ; i < road.length ; i++) {
@@ -33,38 +30,40 @@ class Solution {
             graph[to].add(new Edge(from, cost));
         }
         
-        dijkstra(0);
+        daijkstra(0);
         
         for(int i = 0 ; i < N ; i++) {
-            if(distance[i] <= K) answer++;
+            if(distance[i] <= K) {
+                answer++;
+            }
         }
-        
+
         return answer;
     }
     
-    void dijkstra(int startPoint) {
+    public void daijkstra(int startPoint) {
         PriorityQueue<Edge> pq = new PriorityQueue();
-        distance[startPoint] = 0;
         pq.offer(new Edge(startPoint, 0));
+        distance[startPoint] = 0;
         
         while(!pq.isEmpty()) {
             Edge current = pq.poll();
             int currentNode = current.to;
             int currentCost = current.cost;
             
-            if(distance[currentNode] < currentCost) continue;
+            if(currentCost > distance[currentNode]) continue;
             
             for(int i = 0 ; i < graph[currentNode].size() ; i++) {
                 Edge next = graph[currentNode].get(i);
                 int nextNode = next.to;
                 int nextCost = next.cost;
+                
                 if(distance[nextNode] > distance[currentNode] + nextCost) {
                     distance[nextNode] = distance[currentNode] + nextCost;
                     pq.offer(new Edge(nextNode, distance[nextNode]));
                 }
             }
         }
-        
     }
     
     class Edge implements Comparable<Edge> {
