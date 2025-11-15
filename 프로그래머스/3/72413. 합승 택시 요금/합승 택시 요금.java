@@ -1,24 +1,21 @@
 import java.util.*;
 
 class Solution {
-    // 다익스트라를 3번 돌릴 수 있지 않을까?
-    // Start -> 임의의 정점 X, X -> A 목적지, X -> B 목적지
-    // A와 B 따로 가기
-    // 이 3가지 경우의 수를 탐색하려면 3번의 다익스트라를 적용해야 함.
-    
     ArrayList<Edge>[] graph;
-    int[] distance;
     int n;
-    int s,a,b;
+    int s;
+    int a;
+    int b;
+    int[] distance;
     
     public int solution(int n, int s, int a, int b, int[][] fares) {
         this.n = n;
         this.a = a - 1;
         this.b = b - 1;
         this.s = s - 1;
-        distance = new int[n];
-        final int INF = 200 * 100000 + 1;
-
+        final int INF = 200 * 100_000 + 1;
+        this.distance = new int[n];
+        
         graph = new ArrayList[n];
         for(int i = 0 ; i < n ; i++) {
             graph[i] = new ArrayList();
@@ -37,7 +34,7 @@ class Solution {
         // S에서 모든 노드까지의 거리
         Arrays.fill(distance, INF);
         dijkstra(this.s);
-        int[] distFromS = distance.clone();  
+        int[] distFromS = distance.clone();
         
         // A에서 모든 노드까지의 거리
         Arrays.fill(distance, INF);
@@ -48,13 +45,14 @@ class Solution {
         Arrays.fill(distance, INF);
         dijkstra(this.b);
         int[] distFromB = distance.clone();
-
+        
         int answer = INF;
-        for(int via = 0; via < n; via++) {
-            if(distFromS[via] != INF && distFromA[via] != INF && distFromB[via] != INF) {
-                int cost = distFromS[via] + distFromA[via] + distFromB[via];
-                answer = Math.min(answer, cost);
-            }
+        for(int via = 0 ; via < n ; via++) {
+            if(distFromS[via] == INF) continue;
+            if(distFromA[via] == INF) continue;
+            if(distFromB[via] == INF) continue;
+            int cost = distFromS[via] + distFromA[via] + distFromB[via];
+            answer = Math.min(answer, cost);
         }
         return answer;
     }
@@ -99,3 +97,5 @@ class Solution {
         }
     }
 }
+
+// start -> 임의의 정점 X, X -> a, X -> b를 고려하면 됨.
