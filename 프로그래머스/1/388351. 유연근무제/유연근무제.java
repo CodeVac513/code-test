@@ -4,8 +4,8 @@ class Solution {
         for(int i = 0 ; i < schedules.length ; i++) {
             int count = 0;
             for(int j = 0 ; j < 7 ; j++) {
-                int currentDay = (startday + j - 1) % 7 + 1;
-                if(currentDay == 6 || currentDay == 7) {
+                int currentDay = (startday + j) % 7;
+                if(currentDay == 6 || currentDay == 0) {
                     continue;
                 }
                 if(isCompleted(timelogs[i][j], schedules[i])) {
